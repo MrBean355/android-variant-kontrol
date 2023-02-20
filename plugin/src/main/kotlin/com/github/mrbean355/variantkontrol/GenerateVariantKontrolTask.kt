@@ -18,32 +18,23 @@ abstract class GenerateVariantKontrolTask : DefaultTask() {
     abstract val buildConfigPackage: Property<String>
 
     @get:Input
-    abstract val buildTypes: ListProperty<String>
+    abstract val productFlavors: MapProperty<String, Set<String>>
 
     @get:Input
-    abstract val productFlavors: MapProperty<String, String>
+    abstract val buildTypes: ListProperty<String>
 
     @get:OutputDirectory
     abstract val output: Property<File>
 
     @TaskAction
     fun run() {
-        val mapped = mutableMapOf<String, MutableSet<String>>()
-        productFlavors.get().forEach { (flavor, dimension) ->
-            mapped.getOrPut(dimension) { mutableSetOf() }
-                .add(flavor)
-        }
+        val dimensions = productFlavors.get()
+            .map { (name, flavors) -> Dimension(name, flavors) }
+            .plus(Dimension(BuildTypeDimension, buildTypes.get().toSet()))
 
-        val dimensions = mapped.map { (name, flavors) ->
-            Dimension(name, flavors)
-        } + Dimension(
-            BuildTypeDimension,
-            buildTypes.get().toSet()
-        )
-
-        val dir = File(output.get(), packageName.get().replace('.', '/'))
+        val directory = File(output.get(), packageName.get().replace('.', '/'))
             .also(File::mkdirs)
 
-        generate(dimensions, dir, packageName.get(), buildConfigPackage.get())
+        generate(dimensions, directory, packageName.get(), buildConfigPackage.get())
     }
 }

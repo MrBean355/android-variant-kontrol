@@ -6,6 +6,7 @@ import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.File
 
+@Suppress("unused") // referenced in the build script.
 class VariantKontrolPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
@@ -17,14 +18,14 @@ class VariantKontrolPlugin : Plugin<Project> {
 
             val generateTask = project.tasks.register("generateVariantKontrolDsl", GenerateVariantKontrolTask::class.java) { task ->
                 val libExtension = project.extensions.getByType(VariantKontrolExtension::class.java)
-                val buildTypes = appExtension.buildTypes.map { it.name }
-                val productFlavors = appExtension.productFlavors.asMap.mapValues { it.value.dimension }
                 val applicationId = appExtension.defaultConfig.applicationId ?: error("Null application ID")
+                val buildTypes = appExtension.buildTypes.map { it.name }
+                val dimensionsToFlavors = appExtension.getDimensionsToFlavorsMap()
 
                 task.packageName.set(libExtension.packageName ?: applicationId)
                 task.buildConfigPackage.set(applicationId)
                 task.buildTypes.addAll(buildTypes)
-                task.productFlavors.putAll(productFlavors)
+                task.productFlavors.putAll(dimensionsToFlavors)
                 task.output.set(project.generatedPath())
             }
 
@@ -37,6 +38,18 @@ class VariantKontrolPlugin : Plugin<Project> {
                 it.source(project.generatedPath())
             }
         }
+    }
+
+    private fun AppExtension.getDimensionsToFlavorsMap(): Map<String, Set<String>> {
+        val result = mutableMapOf<String, MutableSet<String>>()
+
+        productFlavors.asMap.forEach { (flavorName, flavor) ->
+            val dimensionName = flavor.dimension ?: error("Flavor '$flavorName' has null dimension")
+            result.getOrPut(dimensionName) { mutableSetOf() }
+                .add(flavorName)
+        }
+
+        return result
     }
 
     private fun Project.generatedPath(): File {
