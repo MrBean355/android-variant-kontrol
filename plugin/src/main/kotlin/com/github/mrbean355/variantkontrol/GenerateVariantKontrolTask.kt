@@ -1,4 +1,4 @@
-package com.github.mrbean355.featuretoggles
+package com.github.mrbean355.variantkontrol
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.ListProperty
@@ -9,7 +9,7 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import java.io.File
 
-abstract class FeatureTogglesTask : DefaultTask() {
+abstract class GenerateVariantKontrolTask : DefaultTask() {
 
     @get:Input
     abstract val packageName: Property<String>

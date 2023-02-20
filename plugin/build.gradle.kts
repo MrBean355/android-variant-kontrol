@@ -15,9 +15,9 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        create("featureTogglesPlugin") {
-            id = "com.github.mrbean355.featuretoggles"
-            implementationClass = "com.github.mrbean355.featuretoggles.FeatureTogglesPlugin"
+        create("variantKontrolPlugin") {
+            id = "com.github.mrbean355.variantkontrol"
+            implementationClass = "com.github.mrbean355.variantkontrol.VariantKontrolPlugin"
         }
     }
 }

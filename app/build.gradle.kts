@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.github.mrbean355.featuretoggles") version "1.0.0-SNAPSHOT"
+    id("com.github.mrbean355.variantkontrol") version "1.0.0-SNAPSHOT"
 }
 
 android {

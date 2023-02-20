@@ -1,4 +1,4 @@
-package com.github.mrbean355.featuretoggles
+package com.github.mrbean355.variantkontrol
 
 import java.io.File
 

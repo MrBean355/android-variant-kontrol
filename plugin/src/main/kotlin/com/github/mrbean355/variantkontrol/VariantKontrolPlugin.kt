@@ -1,4 +1,4 @@
-package com.github.mrbean355.featuretoggles
+package com.github.mrbean355.variantkontrol
 
 import com.android.build.gradle.AppExtension
 import org.gradle.api.Plugin
@@ -6,17 +6,17 @@ import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.File
 
-class FeatureTogglesPlugin : Plugin<Project> {
+class VariantKontrolPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
-        target.extensions.create("variantKontrol", FeatureTogglesExtension::class.java)
+        target.extensions.create("variantKontrol", VariantKontrolExtension::class.java)
 
         target.afterEvaluate { project ->
             val appExtension = project.extensions.findByType(AppExtension::class.java)
                 ?: error("Must be applied to an Android app module")
 
-            val generateTask = project.tasks.register("generateFeatureTogglesDsl", FeatureTogglesTask::class.java) { task ->
-                val libExtension = project.extensions.getByType(FeatureTogglesExtension::class.java)
+            val generateTask = project.tasks.register("generateVariantKontrolDsl", GenerateVariantKontrolTask::class.java) { task ->
+                val libExtension = project.extensions.getByType(VariantKontrolExtension::class.java)
                 val buildTypes = appExtension.buildTypes.map { it.name }
                 val productFlavors = appExtension.productFlavors.asMap.mapValues { it.value.dimension }
                 val applicationId = appExtension.defaultConfig.applicationId ?: error("Null application ID")
