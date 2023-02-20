@@ -97,7 +97,7 @@ private fun StringBuilder.containerClass(dimensions: List<Dimension>) {
         prev.flavors.forEach { flavor ->
             appendLine("            \"%1\$s\" -> %2\$s.%1\$s".format(flavor, prev.name))
         }
-        appendLine("            else -> error(\"Unexpected thing\")")
+        appendLine("            else -> error(\"Unexpected %s: \$active%s\")".format(prev.name, prev.name.capitalised()))
 
         appendLine("        }")
         prev = dimension
@@ -107,7 +107,7 @@ private fun StringBuilder.containerClass(dimensions: List<Dimension>) {
     dimensions.last().flavors.forEach { flavor ->
         appendLine("            \"%1\$s\" -> %2\$s.%1\$s".format(flavor, BuildTypeDimension))
     }
-    appendLine("            else -> error(\"Unexpected build type\")")
+    appendLine("            else -> error(\"Unexpected build type: \$active%s\")".format(BuildTypeDimension.capitalised()))
     appendLine("        }")
     appendLine("        if (enabled) enabledToggles += this")
 
