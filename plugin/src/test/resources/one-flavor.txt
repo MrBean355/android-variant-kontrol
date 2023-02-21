@@ -1,0 +1,48 @@
+package com.github.mrbean355.test
+
+@VariantKontrolDsl
+class TierFlavorConfig {
+    val free: BuildTypeFlavorConfig = BuildTypeFlavorConfig()
+    val paid: BuildTypeFlavorConfig = BuildTypeFlavorConfig()
+}
+
+@VariantKontrolDsl
+class BuildTypeFlavorConfig {
+    var debug: Boolean = false
+    var release: Boolean = false
+}
+
+inline operator fun BuildTypeFlavorConfig.invoke(config: BuildTypeFlavorConfig.() -> Unit) = config()
+
+fun <T> configureToggles(configure: FeatureTogglesScope<T>.() -> Unit): Set<T> {
+    return FeatureTogglesScopeImpl<T>().apply(configure).enabledToggles.toSet()
+}
+
+interface FeatureTogglesScope<T> {
+    fun T.configure(config: TierFlavorConfig.() -> Unit)
+}
+
+private const val activeTier = com.github.mrbean355.config.BuildConfig.FLAVOR_tier
+private const val activeBuildType = com.github.mrbean355.config.BuildConfig.BUILD_TYPE
+
+@DslMarker
+annotation class VariantKontrolDsl
+
+private class FeatureTogglesScopeImpl<T> : FeatureTogglesScope<T> {
+    val enabledToggles = mutableSetOf<T>()
+
+    override fun T.configure(config: TierFlavorConfig.() -> Unit) {
+        val tier = TierFlavorConfig().apply(config)
+        val buildType = when (activeTier) {
+            "free" -> tier.free
+            "paid" -> tier.paid
+            else -> error("Unexpected tier: $activeTier")
+        }
+        val enabled = when (activeBuildType) {
+            "debug" -> buildType.debug
+            "release" -> buildType.release
+            else -> error("Unexpected build type: $activeBuildType")
+        }
+        if (enabled) enabledToggles += this
+    }
+}

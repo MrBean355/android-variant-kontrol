@@ -1,0 +1,62 @@
+package com.github.mrbean355.test
+
+@VariantKontrolDsl
+class QualityFlavorConfig {
+    val good: TierFlavorConfig = TierFlavorConfig()
+    val bad: TierFlavorConfig = TierFlavorConfig()
+}
+
+@VariantKontrolDsl
+class TierFlavorConfig {
+    val free: BuildTypeFlavorConfig = BuildTypeFlavorConfig()
+    val paid: BuildTypeFlavorConfig = BuildTypeFlavorConfig()
+}
+
+@VariantKontrolDsl
+class BuildTypeFlavorConfig {
+    var debug: Boolean = false
+    var release: Boolean = false
+}
+
+inline operator fun TierFlavorConfig.invoke(config: TierFlavorConfig.() -> Unit) = config()
+
+inline operator fun BuildTypeFlavorConfig.invoke(config: BuildTypeFlavorConfig.() -> Unit) = config()
+
+fun <T> configureToggles(configure: FeatureTogglesScope<T>.() -> Unit): Set<T> {
+    return FeatureTogglesScopeImpl<T>().apply(configure).enabledToggles.toSet()
+}
+
+interface FeatureTogglesScope<T> {
+    fun T.configure(config: QualityFlavorConfig.() -> Unit)
+}
+
+private const val activeQuality = com.github.mrbean355.config.BuildConfig.FLAVOR_quality
+private const val activeTier = com.github.mrbean355.config.BuildConfig.FLAVOR_tier
+private const val activeBuildType = com.github.mrbean355.config.BuildConfig.BUILD_TYPE
+
+@DslMarker
+annotation class VariantKontrolDsl
+
+private class FeatureTogglesScopeImpl<T> : FeatureTogglesScope<T> {
+    val enabledToggles = mutableSetOf<T>()
+
+    override fun T.configure(config: QualityFlavorConfig.() -> Unit) {
+        val quality = QualityFlavorConfig().apply(config)
+        val tier = when (activeQuality) {
+            "good" -> quality.good
+            "bad" -> quality.bad
+            else -> error("Unexpected quality: $activeQuality")
+        }
+        val buildType = when (activeTier) {
+            "free" -> tier.free
+            "paid" -> tier.paid
+            else -> error("Unexpected tier: $activeTier")
+        }
+        val enabled = when (activeBuildType) {
+            "debug" -> buildType.debug
+            "release" -> buildType.release
+            else -> error("Unexpected build type: $activeBuildType")
+        }
+        if (enabled) enabledToggles += this
+    }
+}

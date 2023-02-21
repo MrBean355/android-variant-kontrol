@@ -11,6 +11,7 @@ version = "1.0.0-SNAPSHOT"
 dependencies {
     implementation("com.android.tools.build:gradle:7.4.1")
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin")
+    testImplementation("junit:junit:4.13.2")
 }
 
 gradlePlugin {
