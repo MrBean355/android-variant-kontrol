@@ -8,7 +8,7 @@ class DemoApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         val enabled = configureToggles {
-            "my_awesome_feature" {
+            "my_awesome_feature".configure {
                 good.free.debug = true
             }
         }

@@ -22,6 +22,7 @@ fun generate(
         entryPointFunction()
         containerApi(dimensions)
         constants(dimensions, buildConfigPackage)
+        dslAnnotation()
         containerClass(dimensions)
     }
 
@@ -30,7 +31,7 @@ fun generate(
 
 private fun StringBuilder.mainClasses(dimensions: List<Dimension>) {
     dimensions.forEachIndexed { index, dimension ->
-
+        appendLine("@VariantKontrolDsl")
         appendLine("class %sFlavorConfig {".format(dimension.name.capitalised()))
         if (dimension.name == BuildTypeDimension) {
             dimension.flavors.forEach { flavor ->
@@ -74,9 +75,15 @@ private fun StringBuilder.constants(dimensions: List<Dimension>, buildConfigPack
     appendLine()
 }
 
+private fun StringBuilder.dslAnnotation() {
+    appendLine("@DslMarker")
+    appendLine("annotation class VariantKontrolDsl")
+    appendLine()
+}
+
 private fun StringBuilder.containerApi(dimensions: List<Dimension>) {
     appendLine("interface FeatureTogglesScope<T> {")
-    appendLine("    operator fun T.invoke(config: %sFlavorConfig.() -> Unit)".format(dimensions.first().name.capitalised()))
+    appendLine("    fun T.configure(config: %sFlavorConfig.() -> Unit)".format(dimensions.first().name.capitalised()))
     appendLine("}")
     appendLine()
 }
@@ -88,7 +95,7 @@ private fun StringBuilder.containerClass(dimensions: List<Dimension>) {
     appendLine("    val enabledToggles = mutableSetOf<T>()")
     appendLine()
 
-    appendLine("    override operator fun T.invoke(config: %sFlavorConfig.() -> Unit) {".format(prev.name.capitalised()))
+    appendLine("    override fun T.configure(config: %sFlavorConfig.() -> Unit) {".format(prev.name.capitalised()))
     appendLine("        val %s = %sFlavorConfig().apply(config)".format(prev.name, prev.name.capitalised()))
 
     dimensions.drop(1).forEachIndexed { index, dimension ->
@@ -113,7 +120,6 @@ private fun StringBuilder.containerClass(dimensions: List<Dimension>) {
 
     appendLine("    }")
     appendLine("}")
-    appendLine()
 }
 
 private fun buildConfigField(dimension: String): String {
