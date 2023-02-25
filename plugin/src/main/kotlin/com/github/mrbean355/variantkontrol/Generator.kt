@@ -18,7 +18,6 @@ fun generate(
     val content = buildString {
         appendLine("package $packageName\n")
         mainClasses(dimensions)
-        mainClassExtensions(dimensions)
         entryPointFunction()
         containerApi(dimensions)
         constants(dimensions, buildConfigPackage)
@@ -44,14 +43,12 @@ private fun StringBuilder.mainClasses(dimensions: List<Dimension>) {
                 appendLine("    val %1\$s: %2\$sFlavorConfig = %2\$sFlavorConfig()".format(flavor, next.name.capitalised()))
             }
         }
+        if (index > 0) {
+            appendLine()
+            appendLine("    operator fun invoke(config: %sFlavorConfig.() -> Unit) = config(this)".format(dimension.name.capitalised()))
+            appendLine()
+        }
         appendLine("}")
-        appendLine()
-    }
-}
-
-private fun StringBuilder.mainClassExtensions(dimensions: List<Dimension>) {
-    dimensions.drop(1).forEach { dimension ->
-        appendLine("inline operator fun %1\$sFlavorConfig.invoke(config: %1\$sFlavorConfig.() -> Unit) = config()".format(dimension.name.capitalised()))
         appendLine()
     }
 }

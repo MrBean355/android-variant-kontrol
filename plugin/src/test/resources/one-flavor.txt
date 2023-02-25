@@ -10,9 +10,10 @@ class TierFlavorConfig {
 class BuildTypeFlavorConfig {
     var debug: Boolean = false
     var release: Boolean = false
-}
 
-inline operator fun BuildTypeFlavorConfig.invoke(config: BuildTypeFlavorConfig.() -> Unit) = config()
+    operator fun invoke(config: BuildTypeFlavorConfig.() -> Unit) = config(this)
+
+}
 
 fun <T> configureToggles(configure: FeatureTogglesScope<T>.() -> Unit): Set<T> {
     return FeatureTogglesScopeImpl<T>().apply(configure).enabledToggles.toSet()

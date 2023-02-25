@@ -10,25 +10,28 @@ class ColourFlavorConfig {
 class QualityFlavorConfig {
     val good: TierFlavorConfig = TierFlavorConfig()
     val bad: TierFlavorConfig = TierFlavorConfig()
+
+    operator fun invoke(config: QualityFlavorConfig.() -> Unit) = config(this)
+
 }
 
 @VariantKontrolDsl
 class TierFlavorConfig {
     val free: BuildTypeFlavorConfig = BuildTypeFlavorConfig()
     val paid: BuildTypeFlavorConfig = BuildTypeFlavorConfig()
+
+    operator fun invoke(config: TierFlavorConfig.() -> Unit) = config(this)
+
 }
 
 @VariantKontrolDsl
 class BuildTypeFlavorConfig {
     var debug: Boolean = false
     var release: Boolean = false
+
+    operator fun invoke(config: BuildTypeFlavorConfig.() -> Unit) = config(this)
+
 }
-
-inline operator fun QualityFlavorConfig.invoke(config: QualityFlavorConfig.() -> Unit) = config()
-
-inline operator fun TierFlavorConfig.invoke(config: TierFlavorConfig.() -> Unit) = config()
-
-inline operator fun BuildTypeFlavorConfig.invoke(config: BuildTypeFlavorConfig.() -> Unit) = config()
 
 fun <T> configureToggles(configure: FeatureTogglesScope<T>.() -> Unit): Set<T> {
     return FeatureTogglesScopeImpl<T>().apply(configure).enabledToggles.toSet()
