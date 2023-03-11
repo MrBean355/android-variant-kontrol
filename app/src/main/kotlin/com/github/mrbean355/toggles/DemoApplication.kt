@@ -11,6 +11,13 @@ class DemoApplication : Application() {
             "my_awesome_feature".configure {
                 good.free.debug = true
             }
+            "my_awesome_feature_2".configure {
+                good(default = true) {
+                    free(default = false) {
+                        debug = true
+                    }
+                }
+            }
         }
         Log.i("DemoApplication", "Enabled toggles: $enabled")
     }

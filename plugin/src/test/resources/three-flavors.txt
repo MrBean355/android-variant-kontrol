@@ -11,8 +11,13 @@ class QualityFlavorConfig {
     val good: TierFlavorConfig = TierFlavorConfig()
     val bad: TierFlavorConfig = TierFlavorConfig()
 
-    operator fun invoke(config: QualityFlavorConfig.() -> Unit) = config(this)
-
+    operator fun invoke(default: Boolean? = null, config: QualityFlavorConfig.() -> Unit = {}) {
+        if (default != null) {
+            good(default = default)
+            bad(default = default)
+        }
+        config(this)
+    }
 }
 
 @VariantKontrolDsl
@@ -20,8 +25,13 @@ class TierFlavorConfig {
     val free: BuildTypeFlavorConfig = BuildTypeFlavorConfig()
     val paid: BuildTypeFlavorConfig = BuildTypeFlavorConfig()
 
-    operator fun invoke(config: TierFlavorConfig.() -> Unit) = config(this)
-
+    operator fun invoke(default: Boolean? = null, config: TierFlavorConfig.() -> Unit = {}) {
+        if (default != null) {
+            free(default = default)
+            paid(default = default)
+        }
+        config(this)
+    }
 }
 
 @VariantKontrolDsl
@@ -29,8 +39,13 @@ class BuildTypeFlavorConfig {
     var debug: Boolean = false
     var release: Boolean = false
 
-    operator fun invoke(config: BuildTypeFlavorConfig.() -> Unit) = config(this)
-
+    operator fun invoke(default: Boolean? = null, config: BuildTypeFlavorConfig.() -> Unit = {}) {
+        if (default != null) {
+            debug = default
+            release = default
+        }
+        config(this)
+    }
 }
 
 fun <T> configureToggles(configure: FeatureTogglesScope<T>.() -> Unit): Set<T> {

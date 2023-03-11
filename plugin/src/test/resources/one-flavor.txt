@@ -11,8 +11,13 @@ class BuildTypeFlavorConfig {
     var debug: Boolean = false
     var release: Boolean = false
 
-    operator fun invoke(config: BuildTypeFlavorConfig.() -> Unit) = config(this)
-
+    operator fun invoke(default: Boolean? = null, config: BuildTypeFlavorConfig.() -> Unit = {}) {
+        if (default != null) {
+            debug = default
+            release = default
+        }
+        config(this)
+    }
 }
 
 fun <T> configureToggles(configure: FeatureTogglesScope<T>.() -> Unit): Set<T> {

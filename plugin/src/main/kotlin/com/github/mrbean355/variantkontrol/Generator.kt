@@ -45,8 +45,20 @@ private fun StringBuilder.mainClasses(dimensions: List<Dimension>) {
         }
         if (index > 0) {
             appendLine()
-            appendLine("    operator fun invoke(config: %sFlavorConfig.() -> Unit) = config(this)".format(dimension.name.capitalised()))
-            appendLine()
+            appendLine("    operator fun invoke(default: Boolean? = null, config: %sFlavorConfig.() -> Unit = {}) {".format(dimension.name.capitalised()))
+            appendLine("        if (default != null) {")
+            if (dimension.name == BuildTypeDimension) {
+                dimension.flavors.forEach { flavor ->
+                    appendLine("            %s = default".format(flavor))
+                }
+            } else {
+                dimension.flavors.forEach { flavor ->
+                    appendLine("            %s(default = default)".format(flavor))
+                }
+            }
+            appendLine("        }")
+            appendLine("        config(this)")
+            appendLine("    }")
         }
         appendLine("}")
         appendLine()
