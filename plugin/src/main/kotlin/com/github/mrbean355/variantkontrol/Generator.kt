@@ -111,7 +111,7 @@ private fun StringBuilder.containerClass(dimensions: List<Dimension>) {
     appendLine("        }")
     appendLine("        val %s = %sFlavorConfig().apply(config)".format(prev.name, prev.name.capitalised()))
 
-    dimensions.drop(1).forEachIndexed { index, dimension ->
+    dimensions.drop(1).forEach { dimension ->
         appendLine("        val %s = when (active%s) {".format(dimension.name, prev.name.capitalised()))
 
         prev.flavors.forEach { flavor ->
