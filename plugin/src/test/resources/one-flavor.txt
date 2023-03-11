@@ -35,9 +35,13 @@ private const val activeBuildType = com.github.mrbean355.config.BuildConfig.BUIL
 annotation class VariantKontrolDsl
 
 private class FeatureTogglesScopeImpl<T> : FeatureTogglesScope<T> {
+    val configuredToggles = mutableSetOf<T>()
     val enabledToggles = mutableSetOf<T>()
 
     override fun T.configure(config: TierFlavorConfig.() -> Unit) {
+        check(configuredToggles.add(this)) {
+            "Toggle '$this' was already configured."
+        }
         val tier = TierFlavorConfig().apply(config)
         val buildType = when (activeTier) {
             "free" -> tier.free

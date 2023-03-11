@@ -20,9 +20,13 @@ private const val activeBuildType = com.github.mrbean355.config.BuildConfig.BUIL
 annotation class VariantKontrolDsl
 
 private class FeatureTogglesScopeImpl<T> : FeatureTogglesScope<T> {
+    val configuredToggles = mutableSetOf<T>()
     val enabledToggles = mutableSetOf<T>()
 
     override fun T.configure(config: BuildTypeFlavorConfig.() -> Unit) {
+        check(configuredToggles.add(this)) {
+            "Toggle '$this' was already configured."
+        }
         val buildType = BuildTypeFlavorConfig().apply(config)
         val enabled = when (activeBuildType) {
             "debug" -> buildType.debug

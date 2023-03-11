@@ -65,9 +65,13 @@ private const val activeBuildType = com.github.mrbean355.config.BuildConfig.BUIL
 annotation class VariantKontrolDsl
 
 private class FeatureTogglesScopeImpl<T> : FeatureTogglesScope<T> {
+    val configuredToggles = mutableSetOf<T>()
     val enabledToggles = mutableSetOf<T>()
 
     override fun T.configure(config: ColourFlavorConfig.() -> Unit) {
+        check(configuredToggles.add(this)) {
+            "Toggle '$this' was already configured."
+        }
         val colour = ColourFlavorConfig().apply(config)
         val quality = when (activeColour) {
             "green" -> colour.green

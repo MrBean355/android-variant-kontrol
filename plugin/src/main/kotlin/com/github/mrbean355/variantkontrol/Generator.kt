@@ -101,10 +101,14 @@ private fun StringBuilder.containerClass(dimensions: List<Dimension>) {
     var prev = dimensions.first()
 
     appendLine("private class FeatureTogglesScopeImpl<T> : FeatureTogglesScope<T> {")
+    appendLine("    val configuredToggles = mutableSetOf<T>()")
     appendLine("    val enabledToggles = mutableSetOf<T>()")
     appendLine()
 
     appendLine("    override fun T.configure(config: %sFlavorConfig.() -> Unit) {".format(prev.name.capitalised()))
+    appendLine("        check(configuredToggles.add(this)) {")
+    appendLine("            \"Toggle '\$this' was already configured.\"")
+    appendLine("        }")
     appendLine("        val %s = %sFlavorConfig().apply(config)".format(prev.name, prev.name.capitalised()))
 
     dimensions.drop(1).forEachIndexed { index, dimension ->
