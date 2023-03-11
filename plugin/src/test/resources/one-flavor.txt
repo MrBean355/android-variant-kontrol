@@ -32,7 +32,7 @@ private const val activeTier = com.github.mrbean355.config.BuildConfig.FLAVOR_ti
 private const val activeBuildType = com.github.mrbean355.config.BuildConfig.BUILD_TYPE
 
 @DslMarker
-annotation class VariantKontrolDsl
+private annotation class VariantKontrolDsl
 
 private class FeatureTogglesScopeImpl<T> : FeatureTogglesScope<T> {
     val configuredToggles = mutableSetOf<T>()

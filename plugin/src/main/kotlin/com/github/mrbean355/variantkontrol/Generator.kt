@@ -86,7 +86,7 @@ private fun StringBuilder.constants(dimensions: List<Dimension>, buildConfigPack
 
 private fun StringBuilder.dslAnnotation() {
     appendLine("@DslMarker")
-    appendLine("annotation class VariantKontrolDsl")
+    appendLine("private annotation class VariantKontrolDsl")
     appendLine()
 }
 
